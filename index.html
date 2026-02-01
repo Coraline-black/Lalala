@@ -8,7 +8,7 @@
 <style>
 body {
   margin: 0;
-  background: #000;
+  background: black;
   overflow: hidden;
   font-family: Arial, sans-serif;
 }
@@ -37,6 +37,7 @@ canvas {
   justify-content: center;
   flex-direction: column;
 }
+
 button {
   padding: 10px 20px;
   font-size: 16px;
@@ -67,14 +68,18 @@ const ctx = canvas.getContext("2d");
 const lanes = [110, 190, 270];
 
 // ================= ИЗОБРАЖЕНИЯ =================
-const grandma = new Image();
-grandma.src = "grandma.png";
-
 const background = new Image();
 background.src = "background.png";
 
+const grandma = new Image();
+grandma.src = "grandma.png";
+
 const bookImg = new Image();
 bookImg.src = "book.png";
+
+// ================= ФОН (движение) =================
+let bgY1 = 0;
+let bgY2 = -canvas.height;
 
 // ================= СОСТОЯНИЕ ИГРЫ =================
 let speed = 3;
@@ -162,6 +167,12 @@ function update() {
   speed += 0.0006;
   distance += speed * 0.1;
 
+  // движение фона
+  bgY1 += speed;
+  bgY2 += speed;
+  if (bgY1 >= canvas.height) bgY1 = bgY2 - canvas.height;
+  if (bgY2 >= canvas.height) bgY2 = bgY1 - canvas.height;
+
   // прыжок
   player.y += player.vy;
   player.vy += 1;
@@ -209,8 +220,9 @@ function update() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // фон
-  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+  // фон (школьный коридор)
+  ctx.drawImage(background, 0, bgY1, canvas.width, canvas.height);
+  ctx.drawImage(background, 0, bgY2, canvas.width, canvas.height);
 
   // бабушка
   let h = player.state === "slide" ? 50 : 80;
